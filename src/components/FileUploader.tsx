@@ -63,7 +63,7 @@ function FileUploader() {
             className={`radial-progress bg-green-600 text-white border-green-600 border-4 ${
               progress === 100 && "hidden"
             }`}
-            role="progessbar"
+            role="progressbar"
             style={{
               // @ts-ignore
               "--value": progress,
