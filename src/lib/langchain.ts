@@ -1,6 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
@@ -36,31 +36,31 @@ export async function generateDocs(docId: string) {
     .doc(docId)
     .get();
 
-    const downloadUrl = firebaseRef.data()?.downloadUrl;
+  const downloadUrl = firebaseRef.data()?.downloadUrl;
 
-    if (!downloadUrl) {
-        throw new Error("Download URL not found");
-    }
-    console.log(`--- Download URL fetched successfully: ${downloadUrl} ---`);
+  if (!downloadUrl) {
+    throw new Error("Download URL not found");
+  }
+  console.log(`--- Download URL fetched successfully: ${downloadUrl} ---`);
 
-    // fetch the PDF from the specified URL
-    const response = await fetch(downloadUrl);
+  // fetch the PDF from the specified URL
+  const response = await fetch(downloadUrl);
 
-    // load the PDF into a PDFDocument object
-    const data = await response.blob();
+  // load the PDF into a PDFDocument object
+  const data = await response.blob();
 
-    // load the PDF document from the specified path
-    console.log("--- Loading PDF document ---");
-    const loader = new PDFLoader(data);
-    const docs = await loader.load();
+  // load the PDF document from the specified path
+  console.log("--- Loading PDF document ---");
+  const loader = new PDFLoader(data);
+  const docs = await loader.load();
 
-    // split the loaded document into smaller parts for easier processing
-    console.log("--- Splitting the document into smaller parts... ---");
-    const splitter = new RecursiveCharacterTextSplitter();
-    const splitDocs = await splitter.splitDocuments(docs);
-    console.log(`--- Split into ${splitDocs.length} parts ---`);
+  // split the loaded document into smaller parts for easier processing
+  console.log("--- Splitting the document into smaller parts... ---");
+  const splitter = new RecursiveCharacterTextSplitter();
+  const splitDocs = await splitter.splitDocuments(docs);
+  console.log(`--- Split into ${splitDocs.length} parts ---`);
 
-    return splitDocs;
+  return splitDocs;
 }
 
 async function namespaceExists(
@@ -102,5 +102,20 @@ export async function generateEmbeddingsInPineconeVectorStore(docId: string) {
     // if the amespace does not exist, download the PDF from firestore via the stored Download URL & generate the embeddings and store
     // them in the Pinecone vector store
     const splitDocs = await generateDocs(docId);
+
+    console.log(
+      `--- Storing the embeddings in namespace ${docId} on the ${indexName} Pinecone vector store... ---`
+    );
+
+    pineconeVectorStore = await PineconeStore.fromDocuments(
+      splitDocs,
+      embeddings,
+      {
+        pineconeIndex: index,
+        namespace: docId,
+      }
+    );
+
+    return pineconeVectorStore;
   }
 }
