@@ -10,10 +10,10 @@ import { Loader2Icon, RotateCw, ZoomInIcon, ZoomOutIcon } from "lucide-react";
 
 // we need to configure CORS
 // gsutil cors set cors.json gs://<app-name>.appspot.com
-// gsutil cors set cors.json gs://pdfy-79f5d.appspot.com
+// gsutil cors set cors.json gs://pdfy.appspot.com
 // go here >>> https://console.cloud.google.com/
 // create new file in editor calls cors.json
-// run >>> // gsutil cors set cors.json gs://pdfy-79f5d.appspot.com
+// run >>> // gsutil cors set cors.json gs://pdfy.appspot.com
 // https://firebase.google.com/docs/storage/web/download-files#cors_configuration
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;

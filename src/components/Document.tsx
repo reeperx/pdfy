@@ -25,7 +25,7 @@ function Document({
         }}
       >
         <p className="font-semibold line-clamp-2">{name}</p>
-        <p className="text-smtext-gray-500 group-hover:text-green-100">
+        <p className="text-sm text-gray-500 group-hover:text-green-100">
           {/** render size in kbs */}
           {byteSize(size).value} KB
         </p>
